@@ -1,6 +1,6 @@
 import PhotoPreviewSection from '@/components/PhotoPreviewSection';
-import { AntDesign } from '@expo/vector-icons';
-import { CameraType, CameraView, useCameraPermissions } from 'expo-camera';
+import { AntDesign, Fontisto } from '@expo/vector-icons';
+import { CameraType, CameraView, useCameraPermissions, FlashMode } from 'expo-camera';
 import { useRef, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -9,6 +9,8 @@ export default function Camera() {
   const [permission, requestPermission] = useCameraPermissions();
   const [photo, setPhoto] = useState<any>(null);
   const cameraRef = useRef<CameraView | null>(null);
+  //Todo: fix flashmode that doesn't work
+  const [flashMode, setFlashMode] = useState<FlashMode>('off');
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -29,12 +31,19 @@ export default function Camera() {
     setFacing(current => (current === 'back' ? 'front' : 'back'));
   }
 
+  function toggleFlashMode() {
+    setFlashMode(current => (current === 'off' ? 'on' : 'off'))
+    console.log('flash-mode',flashMode);
+    
+  }
+
   const handleTakePhoto =  async () => {
     if (cameraRef.current) {
         const options = {
             quality: 1,
             base64: true,
             exif: false,
+            flash: flashMode
         };
         const takedPhoto = await cameraRef.current.takePictureAsync(options);
 
@@ -48,7 +57,12 @@ export default function Camera() {
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
+      <CameraView style={styles.camera} facing={facing} flash={flashMode} ref={cameraRef}>
+        <View>
+          <TouchableOpacity style={styles.flash} onPress={toggleFlashMode}>
+              <Fontisto name='flash' size={44} color='black' />
+            </TouchableOpacity>
+        </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
             <AntDesign name='retweet' size={44} color='black' />
@@ -69,6 +83,15 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
+  },
+  flash:{
+    borderRadius: 100,
+    padding: 20,
+    margin: 25,
+    backgroundColor: 'gray',
+    overflow:'hidden',
+    position:'relative',
+    width:'18%'
   },
   buttonContainer: {
     flex: 1,
