@@ -2,10 +2,10 @@ import PhotoPreviewSection from '@/components/PhotoPreviewSection';
 import { AntDesign, Fontisto } from '@expo/vector-icons';
 import { CameraType, CameraView, useCameraPermissions, FlashMode } from 'expo-camera';
 import * as MediaLibrary from "expo-media-library";
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function Camera() {
+export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [mediaPermission, setMediaPermission] = MediaLibrary.usePermissions()
@@ -13,6 +13,14 @@ export default function Camera() {
   const cameraRef = useRef<CameraView | null>(null);
   //Todo: fix flashmode that doesn't work
   const [flashMode, setFlashMode] = useState<FlashMode>('off');
+
+
+  useEffect(() => {
+    (async () => {
+      requestPermission()
+      setMediaPermission()
+    }) ();
+  } ,[])
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -53,7 +61,6 @@ export default function Camera() {
     }
   }; 
 
-  // TODO: fix saving images in local storage
   const handleSavePhoto = async () => {
       await MediaLibrary.saveToLibraryAsync(photo.uri).then(() => setPhoto(null))
   }
