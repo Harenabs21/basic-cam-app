@@ -1,12 +1,14 @@
 import PhotoPreviewSection from '@/components/PhotoPreviewSection';
 import { AntDesign, Fontisto } from '@expo/vector-icons';
 import { CameraType, CameraView, useCameraPermissions, FlashMode } from 'expo-camera';
+import * as MediaLibrary from "expo-media-library";
 import { useRef, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function Camera() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
+  const [mediaPermission, setMediaPermission] = MediaLibrary.usePermissions()
   const [photo, setPhoto] = useState<any>(null);
   const cameraRef = useRef<CameraView | null>(null);
   //Todo: fix flashmode that doesn't work
@@ -17,12 +19,12 @@ export default function Camera() {
     return <View />;
   }
 
-  if (!permission.granted) {
+  if (!permission.granted && mediaPermission?.status === 'granted') {
     // Camera permissions are not granted yet.
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button onPress={ () => {requestPermission; setMediaPermission}} title="grant permission" />
       </View>
     );
   }
@@ -51,9 +53,14 @@ export default function Camera() {
     }
   }; 
 
+  // TODO: fix saving images in local storage
+  const handleSavePhoto = async () => {
+      await MediaLibrary.saveToLibraryAsync(photo.uri).then(() => setPhoto(null))
+  }
+
   const handleRetakePhoto = () => setPhoto(null);
 
-  if (photo) return <PhotoPreviewSection photo={photo} handleRetakePhoto={handleRetakePhoto} />
+  if (photo) return <PhotoPreviewSection photo={photo} handleRetakePhoto={handleRetakePhoto} handleSavePhoto={handleSavePhoto} />
 
   return (
     <View style={styles.container}>

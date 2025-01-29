@@ -1,4 +1,4 @@
-import { Fontisto } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { CameraCapturedPicture } from 'expo-camera'
 import React from 'react'
 import { SafeAreaView, View, StyleSheet, Image, TouchableOpacity } from 'react-native'
@@ -6,9 +6,10 @@ import { SafeAreaView, View, StyleSheet, Image, TouchableOpacity } from 'react-n
 interface PhotoPreviewProps{
     photo: CameraCapturedPicture;
     handleRetakePhoto: () => void;
+    handleSavePhoto: () => void;
 }
 
-function PhotoPreviewSection({photo, handleRetakePhoto}: PhotoPreviewProps) {
+function PhotoPreviewSection({photo, handleRetakePhoto, handleSavePhoto}: PhotoPreviewProps) {
   return (
     <SafeAreaView style={styles.container}>
         <View style={styles.box}>
@@ -20,7 +21,10 @@ function PhotoPreviewSection({photo, handleRetakePhoto}: PhotoPreviewProps) {
 
         <View style={styles.buttonContainer}>
             <TouchableOpacity style={styles.button} onPress={handleRetakePhoto}>
-                <Fontisto name='trash' size={36} color='black' />
+                <Ionicons name="trash-outline" size={36} color="black" />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.button} onPress={handleSavePhoto}>
+                <Ionicons name="save-outline" size={36} color="black" />
             </TouchableOpacity>
         </View>
     </SafeAreaView>
@@ -50,6 +54,7 @@ const styles = StyleSheet.create({
         marginTop: '4%',
         flexDirection: 'row',
         justifyContent: "center",
+        gap: 20,
         width: '100%',
     },
     button: {
