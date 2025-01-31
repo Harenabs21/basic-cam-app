@@ -8,7 +8,7 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
-  const [mediaPermission, setMediaPermission] = MediaLibrary.usePermissions()
+  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions()
   const [photo, setPhoto] = useState<any>(null);
   const cameraRef = useRef<CameraView | null>(null);
   //Todo: fix flashmode that doesn't work
@@ -18,7 +18,7 @@ export default function CameraScreen() {
   useEffect(() => {
     (async () => {
       requestPermission()
-      setMediaPermission()
+      requestMediaPermission()
     }) ();
   } ,[])
 
@@ -32,7 +32,7 @@ export default function CameraScreen() {
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={ () => {requestPermission; setMediaPermission}} title="grant permission" />
+        <Button onPress={ () => {requestPermission; requestMediaPermission}} title="grant permission" />
       </View>
     );
   }
