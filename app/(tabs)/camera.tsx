@@ -71,7 +71,7 @@ export default function CameraScreen() {
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing} flash={flashMode} ref={cameraRef}>
+      <CameraView style={styles.camera} facing={facing} flash={flashMode} enableTorch={flashMode === 'on'} ref={cameraRef}>
         <View>
           <TouchableOpacity style={styles.flash} onPress={toggleFlashMode}>
               <Fontisto name='flash' size={44} color='black' />
