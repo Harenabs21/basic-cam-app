@@ -1,26 +1,25 @@
 import PhotoPreviewSection from '@/components/PhotoPreviewSection';
 import { AntDesign, Fontisto } from '@expo/vector-icons';
 import { CameraType, CameraView, useCameraPermissions, FlashMode } from 'expo-camera';
-import * as MediaLibrary from "expo-media-library";
+import * as MediaLibrary from 'expo-media-library';
 import { useEffect, useRef, useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
-  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions()
+  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions();
   const [photo, setPhoto] = useState<any>(null);
   const cameraRef = useRef<CameraView | null>(null);
   //Todo: fix flashmode that doesn't work
   const [flashMode, setFlashMode] = useState<FlashMode>('off');
 
-
   useEffect(() => {
     (async () => {
-      requestPermission()
-      requestMediaPermission()
-    }) ();
-  } ,[])
+      requestPermission();
+      requestMediaPermission();
+    })();
+  }, []);
 
   if (!permission) {
     // Camera permissions are still loading.
@@ -32,57 +31,71 @@ export default function CameraScreen() {
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={ () => {requestPermission; requestMediaPermission}} title="grant permission" />
+        <Button
+          onPress={() => {
+            requestPermission;
+            requestMediaPermission;
+          }}
+          title="grant permission"
+        />
       </View>
     );
   }
 
   function toggleCameraFacing() {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
+    setFacing((current) => (current === 'back' ? 'front' : 'back'));
   }
 
   function toggleFlashMode() {
-    setFlashMode(current => (current === 'off' ? 'on' : 'off'))
-    console.log('flash-mode',flashMode);
-    
+    setFlashMode((current) => (current === 'off' ? 'on' : 'off'));
+    console.log('flash-mode', flashMode);
   }
 
-  const handleTakePhoto =  async () => {
+  const handleTakePhoto = async () => {
     if (cameraRef.current) {
-        const options = {
-            quality: 1,
-            base64: true,
-            exif: false,
-            flash: flashMode
-        };
-        const takedPhoto = await cameraRef.current.takePictureAsync(options);
+      const options = {
+        quality: 1,
+        base64: true,
+        exif: false,
+        flash: flashMode,
+      };
+      const takedPhoto = await cameraRef.current.takePictureAsync(options);
 
-        setPhoto(takedPhoto);
+      setPhoto(takedPhoto);
     }
-  }; 
+  };
 
   const handleSavePhoto = async () => {
-      await MediaLibrary.saveToLibraryAsync(photo.uri).then(() => setPhoto(null))
-  }
+    await MediaLibrary.saveToLibraryAsync(photo.uri).then(() => setPhoto(null));
+  };
 
   const handleRetakePhoto = () => setPhoto(null);
 
-  if (photo) return <PhotoPreviewSection photo={photo} handleRetakePhoto={handleRetakePhoto} handleSavePhoto={handleSavePhoto} />
+  if (photo)
+    return (
+      <PhotoPreviewSection photo={photo} handleRetakePhoto={handleRetakePhoto} handleSavePhoto={handleSavePhoto} />
+    );
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing} flash={flashMode} enableTorch={flashMode === 'on'} ref={cameraRef}>
+      <CameraView
+        style={styles.camera}
+        facing={facing}
+        flash={flashMode}
+        enableTorch={flashMode === 'on'}
+        ref={cameraRef}
+      >
         <View>
           <TouchableOpacity style={styles.flash} onPress={toggleFlashMode}>
-              <Fontisto name='flash' size={44} color='black' />
-            </TouchableOpacity>
+            <Fontisto name="flash" size={44} color="black" />
+          </TouchableOpacity>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <AntDesign name='retweet' size={44} color='black' />
+            <AntDesign name="retweet" size={44} color="black" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.button} onPress={handleTakePhoto}>
-            <AntDesign name='camera' size={44} color='black' />
+            <AntDesign name="camera" size={44} color="black" />
           </TouchableOpacity>
         </View>
       </CameraView>
@@ -98,14 +111,14 @@ const styles = StyleSheet.create({
   camera: {
     flex: 1,
   },
-  flash:{
+  flash: {
     borderRadius: 100,
     padding: 20,
     margin: 25,
     backgroundColor: 'gray',
-    overflow:'hidden',
-    position:'relative',
-    width:'18%'
+    overflow: 'hidden',
+    position: 'relative',
+    width: '18%',
   },
   buttonContainer: {
     flex: 1,
@@ -127,4 +140,3 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
-
