@@ -1,7 +1,9 @@
+import { COLOUR_MATRIX } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
+import { Skia, Image as SkiaImage, Canvas, ColorMatrix } from '@shopify/react-native-skia';
 import { CameraCapturedPicture } from 'expo-camera';
 import React, { useState } from 'react';
-import { SafeAreaView, View, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
+import { SafeAreaView, View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 interface PhotoPreviewProps {
   photo: CameraCapturedPicture;
@@ -10,32 +12,38 @@ interface PhotoPreviewProps {
 }
 
 function PhotoPreviewSection({ photo, handleRetakePhoto, handleSavePhoto }: PhotoPreviewProps) {
-  const [filter, setFilter] = useState('none');
+  const [matrix, setMatrix] = useState(COLOUR_MATRIX.none);
+  const data = Skia.Data.fromBase64(photo.base64!);
+  const image = Skia.Image.MakeImageFromEncoded(data);
 
-  const filters = [
-    { name: 'Aucun', value: 'none' },
-    { name: 'Grayscale', value: 'grayscale(100%)' },
-    { name: 'Sepia', value: 'sepia(100%)' },
-    { name: 'Invert', value: 'invert(100%)' },
-    { name: 'Blur', value: 'blur(3px)' }, // Only works on React Native Web
-  ];
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.box}>
-        <Image
-          style={[styles.previewContainer, { filter }]}
-          source={{ uri: 'data:image/jpg;base64,' + photo.base64 }}
-        />
+        <Canvas style={styles.canvas}>
+          <SkiaImage fit="cover" image={image} x={0} y={0} width={300} height={400}>
+            <ColorMatrix matrix={matrix} />
+          </SkiaImage>
+        </Canvas>
       </View>
 
       <View style={styles.filtersContainer}>
         <Text style={styles.filterText}>Appliquer un filtre :</Text>
         <View style={styles.filterButtons}>
-          {filters.map((f) => (
-            <TouchableOpacity key={f.value} onPress={() => setFilter(f.value)} style={styles.filterButton}>
-              <Text>{f.name}</Text>
-            </TouchableOpacity>
-          ))}
+          <TouchableOpacity onPress={() => setMatrix(COLOUR_MATRIX.none)} style={styles.filterButton}>
+            <Text>Aucun</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setMatrix(COLOUR_MATRIX.sepia)} style={styles.filterButton}>
+            <Text>Sepia</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setMatrix(COLOUR_MATRIX.grayscale)} style={styles.filterButton}>
+            <Text>Grayscale</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setMatrix(COLOUR_MATRIX.invert)} style={styles.filterButton}>
+            <Text>Invert</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setMatrix(COLOUR_MATRIX.contrast)} style={styles.filterButton}>
+            <Text>Contrast</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -65,6 +73,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  canvas: { width: 300, height: 400 },
   previewContainer: {
     width: '95%',
     height: '85%',
