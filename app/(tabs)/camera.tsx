@@ -1,9 +1,9 @@
 import PhotoPreviewSection from '@/components/PhotoPreviewSection';
-import { AntDesign, Fontisto } from '@expo/vector-icons';
+import Pressable from '@/components/button/Button';
 import { CameraType, CameraView, useCameraPermissions, FlashMode } from 'expo-camera';
 import * as MediaLibrary from 'expo-media-library';
 import { useEffect, useRef, useState } from 'react';
-import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
 
 export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -86,17 +86,23 @@ export default function CameraScreen() {
         ref={cameraRef}
       >
         <View>
-          <TouchableOpacity style={styles.flash} onPress={toggleFlashMode}>
-            <Fontisto name="flash" size={44} color="black" />
-          </TouchableOpacity>
+          <Pressable
+            style={styles.flash}
+            icon={flashMode === 'off' ? 'flash-off' : 'flash-on'}
+            onPress={toggleFlashMode}
+            size={44}
+            color="black"
+          />
         </View>
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <AntDesign name="retweet" size={44} color="black" />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={handleTakePhoto}>
-            <AntDesign name="camera" size={44} color="black" />
-          </TouchableOpacity>
+          <Pressable
+            style={styles.button}
+            size={44}
+            icon={'flip-camera-ios'}
+            onPress={toggleCameraFacing}
+            color="black"
+          />
+          <Pressable style={styles.button} size={44} icon={'camera'} color="black" onPress={handleTakePhoto} />
         </View>
       </CameraView>
     </View>
@@ -112,27 +118,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   flash: {
-    borderRadius: 100,
-    padding: 20,
-    margin: 25,
-    backgroundColor: 'gray',
-    overflow: 'hidden',
-    position: 'relative',
-    width: '18%',
+    position: 'absolute',
+    top: 40,
+    left: 20,
   },
   buttonContainer: {
     flex: 1,
     flexDirection: 'row',
-    backgroundColor: 'transparent',
-    margin: 64,
+    justifyContent: 'space-around',
+    alignItems: 'center',
   },
   button: {
     flex: 1,
     alignSelf: 'flex-end',
     alignItems: 'center',
     marginHorizontal: 10,
-    backgroundColor: 'gray',
-    borderRadius: 10,
   },
   text: {
     fontSize: 24,
